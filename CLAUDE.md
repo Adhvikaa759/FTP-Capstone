@@ -9,9 +9,26 @@ FTP Member & Outcomes Tracker — a full-stack CRM/directory for Florida Tech Pa
 ## Architecture
 
 - **client/** — React 18 + Vite, Tailwind CSS, React Router v6, TanStack React Query, Axios
-- **server/** — Node.js + Express (ESM), Prisma ORM, Passport.js Google OAuth, PostgreSQL (Docker)
-- Vite dev server proxies `/auth` and `/api` to the Express backend (port 3001)
-- Auth uses server-side sessions; the client calls `/auth/me` on load to check login state
+- **server/** — Node.js + Express 5 (ESM), Prisma 5 ORM, Passport.js Google OAuth, PostgreSQL 15 (Docker)
+- Vite dev server proxies `/auth` and `/api` to the Express backend (port 3001) — configured in `client/vite.config.js`
+- Auth uses server-side sessions (`express-session`); the client calls `/auth/me` on load to check login state
+- Two user roles: `ADMIN` (full CRUD) and `VIEWER` (read-only)
+
+## Data flow
+
+- Frontend API calls: `client/src/api/` (Axios with `withCredentials: true`) → consumed via React Query hooks in `client/src/hooks/`
+- Auth context in `client/src/context/AuthContext.jsx` — provides `user`, `setUser`, `loading` to all components via `useAuth()` hook
+- Routing: `client/src/App.jsx` — `ProtectedRoute` wraps authenticated routes, `adminOnly` prop gates admin pages
+- Backend routes: `server/src/routes/` — guarded by `requireAuth` and `requireAdmin` middleware from `server/src/middleware/auth.js`
+
+## Database
+
+- PostgreSQL 15 via Docker container named `ftp-postgres`
+- Connection: `postgresql://ftp_user:ftp_password_2024@localhost:5432/ftp_tracker`
+- Prisma schema: `server/prisma/schema.prisma`
+- Models: User, Member, Track, Role, Experience
+- Member has many-to-many with Track and Role, one-to-many with Experience
+- Seed data: `server/prisma/seed.js` — 4 tracks, 6 roles, 17 sample members
 
 ## Commands
 
@@ -35,12 +52,30 @@ npm run dev                          # runs on :5173
 
 # Prisma Studio (visual DB browser)
 cd server && npx prisma studio
+
+# Build client for production
+cd client && npx vite build
 ```
 
 ## Key conventions
 
 - Server uses ES modules (`"type": "module"` in package.json)
-- Prisma schema in `server/prisma/schema.prisma`; seed in `server/prisma/seed.js`
-- Admin auto-promotion: user with email matching `ADMIN_EMAIL` env var gets ADMIN role on OAuth login
+- Prisma 5 (not v7) — schema uses `url = env("DATABASE_URL")` in datasource block
+- Admin auto-promotion: user with email matching `ADMIN_EMAIL` env var gets ADMIN role on OAuth login (see `server/src/config/passport.js`)
 - Auth middleware: `requireAuth` (any logged-in user), `requireAdmin` (ADMIN role only)
 - Frontend API layer: `client/src/api/` (Axios), consumed via React Query hooks in `client/src/hooks/`
+- Tailwind CSS v4 via `@tailwindcss/vite` plugin — styles imported as `@import "tailwindcss"` in `client/src/index.css`
+- Environment variables: `server/.env` (database, OAuth, session), `client/.env` (API URL) — both gitignored
+
+## API endpoints
+
+- `GET /auth/google` — initiate OAuth
+- `GET /auth/google/callback` — OAuth callback
+- `GET /auth/me` — current user
+- `POST /auth/logout` — log out
+- `GET /api/members` — list with filters (`?search=`, `?cohort=`, `?track=`, `?role=`, `?graduationYear=`, `?company=`)
+- `GET/POST /api/members/:id` — single member CRUD
+- `PUT/DELETE /api/members/:id` — update/delete (admin only)
+- `GET /api/tracks` — all tracks
+- `GET /api/roles` — all roles
+- `GET /api/export/members/csv` — CSV download (admin only)
