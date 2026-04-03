@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  VIEWER
+}
+
+enum ExperienceType {
+  INTERNSHIP
+  FULLTIME
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  googleId  String   @unique
+  role      UserRole @default(VIEWER)
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdMembers Member[] @relation("CreatedBy")
+  updatedMembers Member[] @relation("UpdatedBy")
+}
+
+model Member {
+  id             String   @id @default(cuid())
+  name           String
+  email          String?
+  cohort         String
+  graduationYear Int
+  linkedinUrl    String?
+  bio            String?
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  createdBy   User?   @relation("CreatedBy", fields: [createdById], references: [id])
+  createdById String?
+  updatedBy   User?   @relation("UpdatedBy", fields: [updatedById], references: [id])
+  updatedById String?
+
+  tracks      Track[]
+  roles       Role[]
+  experiences Experience[]
+}
+
+model Track {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  color       String?
+  members     Member[]
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  members     Member[]
+}
+
+model Experience {
+  id        String         @id @default(cuid())
+  company   String
+  title     String
+  type      ExperienceType
+  startDate DateTime?
+  endDate   DateTime?
+  isCurrent Boolean        @default(false)
+
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId String
+}

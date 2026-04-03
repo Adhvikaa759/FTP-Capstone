@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: ftp-postgres
+    environment:
+      POSTGRES_USER: ftp_user
+      POSTGRES_PASSWORD: ftp_password_2024
+      POSTGRES_DB: ftp_tracker
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
