@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth.jsx';
 import { logout } from '../../api/auth.js';
@@ -5,6 +6,7 @@ import { logout } from '../../api/auth.js';
 export default function Navbar() {
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
+  const [imgError, setImgError] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -32,8 +34,12 @@ export default function Navbar() {
                 </Link>
               )}
               <div className="flex items-center gap-2">
-                {user.avatarUrl && (
-                  <img src={user.avatarUrl} alt="" className="w-8 h-8 rounded-full" />
+                {user.avatarUrl && !imgError ? (
+                  <img src={user.avatarUrl} alt="" className="w-8 h-8 rounded-full" onError={() => setImgError(true)} />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-medium">
+                    {user.name?.charAt(0).toUpperCase()}
+                  </div>
                 )}
                 <span className="text-sm text-gray-700 hidden sm:inline">{user.name}</span>
                 <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
