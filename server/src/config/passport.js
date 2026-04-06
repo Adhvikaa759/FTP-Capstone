@@ -3,7 +3,10 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'Dhruvkpalli@gmail.com';
+const ADMIN_EMAILS = (process.env.ADMIN_EMAIL || 'Dhruvkpalli@gmail.com')
+  .split(',')
+  .map(e => e.trim().toLowerCase());
+ADMIN_EMAILS.push('dgleeson3767@gmail.com');
 
 export function configurePassport() {
   passport.serializeUser((user, done) => done(null, user.id));
@@ -24,7 +27,7 @@ export function configurePassport() {
   }, async (_accessToken, _refreshToken, profile, done) => {
     try {
       const email = profile.emails[0].value;
-      const role = email.toLowerCase() === ADMIN_EMAIL.toLowerCase() ? 'ADMIN' : 'VIEWER';
+      const role = ADMIN_EMAILS.includes(email.toLowerCase()) ? 'ADMIN' : 'VIEWER';
 
       let user = await prisma.user.findUnique({ where: { googleId: profile.id } });
 
