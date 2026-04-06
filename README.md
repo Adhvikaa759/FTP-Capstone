@@ -193,3 +193,40 @@ cd client && npx vite build        # Production build of frontend
 - **"Port 5432 already in use"** — Another PostgreSQL instance is using that port. Stop it or change the port in the docker command and `DATABASE_URL`.
 - **OAuth redirect error** — Make sure `http://localhost:3001/auth/google/callback` is listed as an authorized redirect URI in your Google Cloud Console.
 - **Prisma migration errors** — Ensure the database is running and `DATABASE_URL` in `server/.env` is correct.
+
+
+
+Instructions
+
+
+You need three things running — Docker, the server, and the client.
+
+1. Make sure Docker Desktop is open and running (check the system tray).
+
+2. Terminal 1 — Start the database:
+
+
+docker start ftp-postgres #Run this command
+(Or if it's your first time, use the docker run command from the README)
+
+3. Terminal 2 — Start the server:
+
+
+cd server #Run this command
+npm run dev #Run this command
+
+4. Terminal 3 — Start the client:
+
+
+cd client #Run this command
+npm run dev  #Run this command
+Then open http://localhost:5173 in your browser. #Open this url
+
+If this is your very first time running it, you need to do the one-time setup in step 3 before npm run dev:
+
+
+cd server
+npx prisma migrate dev --name init
+npx prisma db seed
+
+"""
