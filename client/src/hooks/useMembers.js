@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchMembers, fetchMember, createMember, updateMember, deleteMember, fetchTracks, fetchRoles } from '../api/members.js';
+import { fetchMembers, fetchMember, createMember, updateMember, deleteMember, fetchTracks, fetchRoles, fetchUsers, updateUserRole } from '../api/members.js';
 
 export function useMembersList(filters) {
   return useQuery({ queryKey: ['members', filters], queryFn: () => fetchMembers(filters) });
@@ -36,4 +36,16 @@ export function useTracks() {
 
 export function useRoles() {
   return useQuery({ queryKey: ['roles'], queryFn: fetchRoles });
+}
+
+export function useUsers() {
+  return useQuery({ queryKey: ['users'], queryFn: fetchUsers });
+}
+
+export function useUpdateUserRole() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, role }) => updateUserRole(id, role),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['users'] }),
+  });
 }

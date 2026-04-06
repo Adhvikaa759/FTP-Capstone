@@ -26,12 +26,20 @@ export default function Navbar() {
           {user && (
             <div className="flex items-center gap-4">
               {user.role === 'ADMIN' && (
-                <Link
-                  to="/members/new"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-                >
-                  + Add Member
-                </Link>
+                <>
+                  <Link
+                    to="/users"
+                    className="text-sm text-gray-600 hover:text-gray-800 font-medium"
+                  >
+                    Manage Users
+                  </Link>
+                  <Link
+                    to="/members/new"
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    + Add Member
+                  </Link>
+                </>
               )}
               <div className="flex items-center gap-2">
                 {user.avatarUrl && !imgError ? (

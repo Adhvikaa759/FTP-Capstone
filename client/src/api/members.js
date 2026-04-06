@@ -8,3 +8,6 @@ export const deleteMember = (id) => client.delete(`/api/members/${id}`).then(r =
 
 export const fetchTracks = () => client.get('/api/tracks').then(r => r.data);
 export const fetchRoles = () => client.get('/api/roles').then(r => r.data);
+
+export const fetchUsers = () => client.get('/api/users').then(r => r.data);
+export const updateUserRole = (id, role) => client.put(`/api/users/${id}/role`, { role }).then(r => r.data);

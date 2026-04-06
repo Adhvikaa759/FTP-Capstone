@@ -9,6 +9,7 @@ import memberRoutes from './routes/members.js';
 import trackRoutes from './routes/tracks.js';
 import roleRoutes from './routes/roles.js';
 import exportRoutes from './routes/export.js';
+import userRoutes from './routes/users.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
@@ -38,6 +39,7 @@ app.use('/api/members', memberRoutes);
 app.use('/api/tracks', trackRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/export', exportRoutes);
+app.use('/api/users', userRoutes);
 
 app.use(errorHandler);
 

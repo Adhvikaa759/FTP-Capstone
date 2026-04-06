@@ -9,6 +9,7 @@ import MemberDetailPage from './pages/MemberDetailPage.jsx';
 import AddMemberPage from './pages/AddMemberPage.jsx';
 import EditMemberPage from './pages/EditMemberPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
+import UsersPage from './pages/UsersPage.jsx';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },
@@ -26,6 +27,7 @@ export default function App() {
               <Route path="members/:id" element={<MemberDetailPage />} />
               <Route path="members/new" element={<ProtectedRoute adminOnly><AddMemberPage /></ProtectedRoute>} />
               <Route path="members/:id/edit" element={<ProtectedRoute adminOnly><EditMemberPage /></ProtectedRoute>} />
+              <Route path="users" element={<ProtectedRoute adminOnly><UsersPage /></ProtectedRoute>} />
             </Route>
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
