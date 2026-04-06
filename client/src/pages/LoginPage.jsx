@@ -1,8 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.jsx';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
-
 export default function LoginPage() {
   const { user, loading } = useAuth();
 
@@ -15,7 +13,7 @@ export default function LoginPage() {
         <h1 className="text-3xl font-bold text-blue-600 mb-2">FTP Tracker</h1>
         <p className="text-gray-500 mb-8">Florida Tech Pathways Member & Outcomes Tracker</p>
         <a
-          href={`${API_URL}/auth/google`}
+          href="/auth/google"
           className="inline-flex items-center gap-3 bg-white border border-gray-300 rounded-lg px-6 py-3 font-medium text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">

@@ -8,8 +8,6 @@ import MemberTable from '../components/members/MemberTable.jsx';
 import MemberCard from '../components/members/MemberCard.jsx';
 import LoadingSpinner from '../components/ui/LoadingSpinner.jsx';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
-
 export default function DirectoryPage() {
   const { user } = useAuth();
   const { filters, activeFilters, updateFilter, clearFilters } = useFilters();
@@ -28,7 +26,7 @@ export default function DirectoryPage() {
         <div className="flex items-center gap-2">
           {user?.role === 'ADMIN' && (
             <a
-              href={`${API_URL}/api/export/members/csv`}
+              href="/api/export/members/csv"
               className="text-sm text-gray-600 hover:text-gray-800 border border-gray-300 px-3 py-2 rounded-lg"
             >
               Export CSV

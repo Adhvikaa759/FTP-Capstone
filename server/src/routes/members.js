@@ -28,6 +28,7 @@ router.get('/', requireAuth, async (req, res, next) => {
       where,
       include: { tracks: true, roles: true, experiences: true },
       orderBy: { name: 'asc' },
+      distinct: ['id'],
     });
 
     res.json(members);
