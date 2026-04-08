@@ -6,6 +6,7 @@ import SearchBar from '../components/filters/SearchBar.jsx';
 import FilterPanel from '../components/filters/FilterPanel.jsx';
 import MemberTable from '../components/members/MemberTable.jsx';
 import MemberCard from '../components/members/MemberCard.jsx';
+import CSVImportModal from '../components/members/CSVImportModal.jsx';
 import LoadingSpinner from '../components/ui/LoadingSpinner.jsx';
 
 export default function DirectoryPage() {
@@ -13,6 +14,7 @@ export default function DirectoryPage() {
   const { filters, activeFilters, updateFilter, clearFilters } = useFilters();
   const { data: members, isLoading, error } = useMembersList(activeFilters);
   const [view, setView] = useState('table');
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -25,12 +27,20 @@ export default function DirectoryPage() {
         </div>
         <div className="flex items-center gap-2">
           {user?.role === 'ADMIN' && (
-            <a
-              href="/api/export/members/csv"
-              className="text-sm text-gray-600 hover:text-gray-800 border border-gray-300 px-3 py-2 rounded-lg"
-            >
-              Export CSV
-            </a>
+            <>
+              <button
+                onClick={() => setIsImportModalOpen(true)}
+                className="text-sm text-gray-600 hover:text-gray-800 border border-gray-300 px-3 py-2 rounded-lg"
+              >
+                Import CSV
+              </button>
+              <a
+                href="/api/export/members/csv"
+                className="text-sm text-gray-600 hover:text-gray-800 border border-gray-300 px-3 py-2 rounded-lg"
+              >
+                Export CSV
+              </a>
+            </>
           )}
           <div className="flex border border-gray-300 rounded-lg overflow-hidden">
             <button
@@ -71,6 +81,8 @@ export default function DirectoryPage() {
           ? <MemberTable members={members} />
           : <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">{members.map(m => <MemberCard key={m.id} member={m} />)}</div>
       )}
+
+      <CSVImportModal isOpen={isImportModalOpen} onClose={() => setIsImportModalOpen(false)} />
     </div>
   );
 }

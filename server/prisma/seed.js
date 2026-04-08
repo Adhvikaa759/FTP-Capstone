@@ -7,22 +7,19 @@ async function main() {
   const tracks = await Promise.all([
     prisma.track.upsert({ where: { name: 'Consulting' }, update: {}, create: { name: 'Consulting', color: '#8B5CF6' } }),
     prisma.track.upsert({ where: { name: 'Tech Sales' }, update: {}, create: { name: 'Tech Sales', color: '#F59E0B' } }),
-    prisma.track.upsert({ where: { name: 'Software Engineering' }, update: {}, create: { name: 'Software Engineering', color: '#3B82F6' } }),
-    prisma.track.upsert({ where: { name: 'Product Management' }, update: {}, create: { name: 'Product Management', color: '#10B981' } }),
+    prisma.track.upsert({ where: { name: 'SWE' }, update: {}, create: { name: 'SWE', color: '#3B82F6' } }),
+    prisma.track.upsert({ where: { name: 'PM' }, update: {}, create: { name: 'PM', color: '#10B981' } }),
   ]);
 
-  // Create roles
+  // Create 4 base roles
   const roles = await Promise.all([
     prisma.role.upsert({ where: { name: 'Analyst' }, update: {}, create: { name: 'Analyst' } }),
     prisma.role.upsert({ where: { name: 'Senior Analyst' }, update: {}, create: { name: 'Senior Analyst' } }),
+    prisma.role.upsert({ where: { name: 'VP' }, update: {}, create: { name: 'VP' } }),
     prisma.role.upsert({ where: { name: 'President' }, update: {}, create: { name: 'President' } }),
-    prisma.role.upsert({ where: { name: 'Vice President' }, update: {}, create: { name: 'Vice President' } }),
-    prisma.role.upsert({ where: { name: 'Alumni' }, update: {}, create: { name: 'Alumni' } }),
-    prisma.role.upsert({ where: { name: 'Mentor' }, update: {}, create: { name: 'Mentor' } }),
   ]);
 
-  const [consulting, techSales, swe, pm] = tracks;
-  const [analyst, seniorAnalyst, president, vp, alumni, mentor] = roles;
+  const [analyst, seniorAnalyst, vp, president] = roles;
 
   const members = [
     { name: 'Alex Rivera', email: 'arivera@ufl.edu', cohort: 'Spring 2025', graduationYear: 2025, linkedinUrl: 'https://linkedin.com/in/arivera', bio: 'Passionate about management consulting and strategy.', tracks: [consulting], roles: [seniorAnalyst], experiences: [{ company: 'Deloitte', title: 'Consulting Intern', type: 'INTERNSHIP' }] },
@@ -45,13 +42,36 @@ async function main() {
   ];
 
   for (const m of members) {
-    await prisma.member.create({
-      data: {
+    // Delete old experiences for this member if they exist (for clean upsert)
+    const existing = await prisma.member.findUnique({ where: { email: m.email } });
+    if (existing) {
+      await prisma.experience.deleteMany({ where: { memberId: existing.id } });
+    }
+
+    await prisma.member.upsert({
+      where: { email: m.email },
+      update: {
+        name: m.name,
+        cohort: m.cohort,
+        graduationYear: m.graduationYear,
+        linkedinUrl: m.linkedinUrl || null,
+        bio: m.bio,
+        tracks: { set: m.tracks.map(t => ({ id: t.id })) },
+        roles: { set: m.roles.map(r => ({ id: r.id })) },
+        experiences: {
+          create: m.experiences.map(e => ({
+            company: e.company,
+            title: e.title,
+            type: e.type,
+          })),
+        },
+      },
+      create: {
         name: m.name,
         email: m.email,
         cohort: m.cohort,
         graduationYear: m.graduationYear,
-        linkedinUrl: m.linkedinUrl,
+        linkedinUrl: m.linkedinUrl || null,
         bio: m.bio,
         tracks: { connect: m.tracks.map(t => ({ id: t.id })) },
         roles: { connect: m.roles.map(r => ({ id: r.id })) },

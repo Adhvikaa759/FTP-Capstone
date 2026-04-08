@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchMembers, fetchMember, createMember, updateMember, deleteMember, fetchTracks, fetchRoles, fetchUsers, updateUserRole } from '../api/members.js';
+import { fetchMembers, fetchMember, createMember, updateMember, deleteMember, importMembersCSV, fetchTracks, fetchRoles, fetchUsers, updateUserRole } from '../api/members.js';
 
 export function useMembersList(filters) {
   return useQuery({ queryKey: ['members', filters], queryFn: () => fetchMembers(filters) });
@@ -12,6 +12,11 @@ export function useMember(id) {
 export function useCreateMember() {
   const qc = useQueryClient();
   return useMutation({ mutationFn: createMember, onSuccess: () => qc.invalidateQueries({ queryKey: ['members'] }) });
+}
+
+export function useImportCSV() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: importMembersCSV, onSuccess: () => qc.invalidateQueries({ queryKey: ['members'] }) });
 }
 
 export function useUpdateMember() {

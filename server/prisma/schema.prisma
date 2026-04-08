@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum UserRole {
@@ -34,9 +35,9 @@ model User {
 model Member {
   id             String   @id @default(cuid())
   name           String
-  email          String?
+  email          String?  @unique
   cohort         String
-  graduationYear Int
+  graduationYear Int?
   linkedinUrl    String?
   bio            String?
   isActive       Boolean  @default(true)

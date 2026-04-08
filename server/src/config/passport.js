@@ -36,9 +36,9 @@ export function configurePassport() {
       let user = await prisma.user.findUnique({ where: { googleId: profile.id } });
 
       if (user) {
-        // Update role in case admin email changed
-        if (user.role !== role) {
-          user = await prisma.user.update({ where: { id: user.id }, data: { role } });
+        // Promote to ADMIN if they were added to the ADMIN_EMAILS list, but never auto-demote.
+        if (role === 'ADMIN' && user.role !== 'ADMIN') {
+          user = await prisma.user.update({ where: { id: user.id }, data: { role: 'ADMIN' } });
         }
       } else {
         user = await prisma.user.create({

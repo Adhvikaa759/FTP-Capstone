@@ -1,6 +1,19 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth.jsx';
+import { useDeleteMember } from '../../hooks/useMembers.js';
 
 export default function MemberTable({ members }) {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const deleteMutation = useDeleteMember();
+  const isAdmin = user?.role === 'ADMIN';
+
+  const handleDelete = (id, name) => {
+    if (window.confirm(`Are you sure you want to delete ${name}?`)) {
+      deleteMutation.mutate(id);
+    }
+  };
+
   return (
     <div className="overflow-x-auto bg-white rounded-xl border border-gray-200">
       <table className="w-full text-left text-sm">
@@ -11,6 +24,7 @@ export default function MemberTable({ members }) {
             <th className="px-4 py-3 font-medium text-gray-600">Tracks</th>
             <th className="px-4 py-3 font-medium text-gray-600">Roles</th>
             <th className="px-4 py-3 font-medium text-gray-600">Companies</th>
+            {isAdmin && <th className="px-4 py-3 font-medium text-gray-600 text-right">Actions</th>}
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -33,6 +47,25 @@ export default function MemberTable({ members }) {
               </td>
               <td className="px-4 py-3 text-gray-600">{m.roles.map(r => r.name).join(', ')}</td>
               <td className="px-4 py-3 text-gray-600">{m.experiences.map(e => e.company).join(', ')}</td>
+              {isAdmin && (
+                <td className="px-4 py-3 text-right">
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => navigate(`/members/${m.id}/edit`)}
+                      className="text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(m.id, m.name)}
+                      disabled={deleteMutation.isPending}
+                      className="text-red-600 hover:text-red-800 font-medium disabled:opacity-50"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

@@ -49,7 +49,7 @@ export default function MemberForm({ initialData, onSubmit, isSubmitting }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.name || !form.cohort || !form.graduationYear) return;
+    if (!form.name || !form.cohort) return;
     onSubmit(form);
   };
 
@@ -65,7 +65,7 @@ export default function MemberForm({ initialData, onSubmit, isSubmitting }) {
           placeholder="Select cohort"
           options={COHORTS.map(c => ({ value: c, label: c }))}
         />
-        <Input label="Graduation Year *" type="number" value={form.graduationYear} onChange={e => setField('graduationYear', e.target.value)} required />
+        <Input label="Graduation Year" type="number" value={form.graduationYear} onChange={e => setField('graduationYear', e.target.value)} />
         <Input label="LinkedIn URL" value={form.linkedinUrl} onChange={e => setField('linkedinUrl', e.target.value)} className="sm:col-span-2" />
       </div>
 
@@ -87,11 +87,10 @@ export default function MemberForm({ initialData, onSubmit, isSubmitting }) {
               key={t.id}
               type="button"
               onClick={() => toggleId('trackIds', t.id)}
-              className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${
-                form.trackIds.includes(t.id)
-                  ? 'text-white border-transparent'
-                  : 'text-gray-600 border-gray-300 hover:border-gray-400'
-              }`}
+              className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${form.trackIds.includes(t.id)
+                ? 'text-white border-transparent'
+                : 'text-gray-600 border-gray-300 hover:border-gray-400'
+                }`}
               style={form.trackIds.includes(t.id) ? { backgroundColor: t.color } : {}}
             >
               {t.name}
@@ -108,11 +107,10 @@ export default function MemberForm({ initialData, onSubmit, isSubmitting }) {
               key={r.id}
               type="button"
               onClick={() => toggleId('roleIds', r.id)}
-              className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${
-                form.roleIds.includes(r.id)
-                  ? 'bg-gray-800 text-white border-transparent'
-                  : 'text-gray-600 border-gray-300 hover:border-gray-400'
-              }`}
+              className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${form.roleIds.includes(r.id)
+                ? 'bg-gray-800 text-white border-transparent'
+                : 'text-gray-600 border-gray-300 hover:border-gray-400'
+                }`}
             >
               {r.name}
             </button>
